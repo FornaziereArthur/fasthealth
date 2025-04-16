@@ -1,0 +1,15 @@
+{% extends 'base_logado.html' %}
+{% load static %}
+
+{% block title %}Novo Diagnóstico{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <h2>Descreva seus Sintomas</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="sintomas" rows="6" placeholder="Por favor, descreva todos os sintomas que você está sentindo, incluindo quando começaram, sua intensidade e qualquer outro detalhe relevante." required></textarea>
+        <button type="submit">Analisar Sintomas</button>
+    </form>
+</div>
+{% endblock %} 

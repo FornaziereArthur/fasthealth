@@ -1,0 +1,1 @@
+# Este arquivo é necessário para que o Django reconheça a pasta como um pacote de tags de template 

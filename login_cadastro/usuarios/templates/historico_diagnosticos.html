@@ -1,0 +1,34 @@
+{% extends 'base_logado.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Histórico de Diagnósticos{% endblock %}
+
+{% block content %}
+<div class="resultado-container">
+    <h2>Histórico de Diagnósticos</h2>
+    
+    {% if diagnosticos %}
+        {% for diagnostico in diagnosticos %}
+            <div class="resultado-section">
+                <h3>Diagnóstico de {{ diagnostico.data_criacao|date:"d/m/Y H:i" }}</h3>
+                <p><strong>Sintomas:</strong> {{ diagnostico.sintomas|truncatechars:150 }}</p>
+                <p><strong>Doença Sugerida:</strong> {{ diagnostico.doenca_sugerida }}</p>
+                <p><strong>Especialidade:</strong> {{ diagnostico.especialidade_recomendada }}</p>
+                <p><strong>Confiança:</strong> {{ diagnostico.confianca_diagnostico|multiply:100 }}%</p>
+                <div class="resultado-botoes" style="margin-top: 10px;">
+                    <a href="{% url 'resultado_diagnostico' diagnostico.id %}" class="resultado-botao">Ver Detalhes</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="resultado-section">
+            <p style="text-align: center;">Você ainda não realizou nenhum diagnóstico.</p>
+        </div>
+    {% endif %}
+    
+    <div class="resultado-botoes">
+        <a href="{% url 'diagnostico' %}" class="resultado-botao">Novo Diagnóstico</a>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,56 @@
+{% extends 'usuarios/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <button id="menuToggle" class="menu-toggle">
+        <i class="fas fa-user-circle"></i>
+    </button>
+    
+    <div id="dropdownContent" class="dropdown-content">
+        <div class="user-info">
+            <p><strong>{{ user.username }}</strong></p>
+            <p>{{ user.email }}</p>
+        </div>
+        <a href="{% url 'perfil' %}">
+            <i class="fas fa-user"></i>
+            Meu Perfil
+        </a>
+        <a href="#" id="alterarSenhaBtn">
+            <i class="fas fa-key"></i>
+            Alterar Senha
+        </a>
+        <a href="{% url 'sair' %}" class="text-danger">
+            <i class="fas fa-sign-out-alt"></i>
+            Sair
+        </a>
+    </div>
+
+    <!-- Modal Alterar Senha -->
+    <div id="modalAlterarSenha" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Alterar Senha</h2>
+            <form id="formAlterarSenha">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="senhaAtual">Senha Atual</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" required>
+                </div>
+                <div class="form-group">
+                    <label for="novaSenha">Nova Senha</label>
+                    <input type="password" id="novaSenha" name="novaSenha" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmarSenha">Confirmar Nova Senha</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+                </div>
+                <button type="submit" class="btn-primary">Salvar</button>
+            </form>
+            <div id="mensagem" class="mensagem"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/alterarSenha.js' %}"></script>
+{% endblock %} 

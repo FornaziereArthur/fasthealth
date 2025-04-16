@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>FastHealthy - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}login-page{% endblock %}">
+    <nav class="home-navbar">
+        <div class="logo">
+            <a href="{% url 'home' %}" class="logo-link">
+                <h1>FastHealthy<span class="plus-icon">+</span></h1>
+            </a>
+        </div>
+        <div class="nav-buttons">
+            <a href="{% url 'diagnostico' %}" class="nav-button">NOVO DIAGNÓSTICO</a>
+            <a href="{% url 'historico_diagnosticos' %}" class="nav-button">HISTÓRICO</a>
+            <div class="profile-dropdown">
+                <button id="menuToggle" class="menu-toggle">
+                    <span class="material-icons">account_circle</span>
+                </button>
+                <div id="dropdownContent" class="dropdown-content">
+                    <div class="user-info">
+                        <div class="user-name"></div>
+                        <div class="user-email">{{ user.email }}</div>
+                    </div>
+                    <a href="{% url 'perfil_usuario' %}" class="dropdown-item">
+                        <span class="material-icons">person</span>
+                        Meu Perfil
+                    </a>
+                    <a href="{% url 'perfil_usuario' %}#informacoes-saude" class="dropdown-item">
+                        <span class="material-icons">favorite</span>
+                        Informações de Saúde
+                    </a>
+                    <a href="{% url 'historico_diagnosticos' %}" class="dropdown-item">
+                        <span class="material-icons">history</span>
+                        Histórico de Diagnósticos
+                    </a>
+                    <a href="#" class="dropdown-item" id="alterarSenhaBtn">
+                        <span class="material-icons">lock</span>
+                        Alterar Senha
+                    </a>
+                    <a href="{% url 'logout' %}" class="dropdown-item text-danger">
+                        <span class="material-icons">logout</span>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal Alterar Senha -->
+    <div id="alterarSenhaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Alterar Senha</h3>
+            <form method="POST" action="{% url 'alterar_senha' %}" class="form-edicao">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="senha-atual">Senha Atual:</label>
+                    <input type="password" id="senha-atual" name="senha_atual" required>
+                </div>
+                <div class="input-group">
+                    <label for="nova-senha">Nova Senha:</label>
+                    <input type="password" id="nova-senha" name="nova_senha" required>
+                </div>
+                <div class="input-group">
+                    <label for="confirmar-senha">Confirmar Nova Senha:</label>
+                    <input type="password" id="confirmar-senha" name="confirmar_senha" required>
+                </div>
+                <button type="submit" class="salvar-btn">Alterar Senha</button>
+            </form>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para pegar apenas o primeiro nome
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+            const fullName = "{{ user.first_name }}";
+            const firstName = fullName.split(' ')[0];
+            userNameElement.textContent = `Olá, ${firstName}!`;
+        }
+
+        // Menu dropdown
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownContent = document.getElementById('dropdownContent');
+
+        if (menuToggle && dropdownContent) {
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!dropdownContent.contains(e.target) && !menuToggle.contains(e.target)) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+        }
+
+        // Modal de alteração de senha
+        const alterarSenhaBtn = document.getElementById('alterarSenhaBtn');
+        const alterarSenhaModal = document.getElementById('alterarSenhaModal');
+        const closeModal = document.querySelector('.close-modal');
+
+        if (alterarSenhaBtn && alterarSenhaModal && closeModal) {
+            alterarSenhaBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alterarSenhaModal.style.display = 'block';
+                if (dropdownContent) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+
+            closeModal.addEventListener('click', function() {
+                alterarSenhaModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(e) {
+                if (e.target == alterarSenhaModal) {
+                    alterarSenhaModal.style.display = 'none';
+                }
+            });
+
+            // Formulário de alteração de senha
+            const formAlterarSenha = alterarSenhaModal.querySelector('form');
+            formAlterarSenha.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const senhaAtual = document.getElementById('senha-atual').value;
+                const novaSenha = document.getElementById('nova-senha').value;
+                const confirmarSenha = document.getElementById('confirmar-senha').value;
+
+                if (novaSenha !== confirmarSenha) {
+                    alert('As senhas não coincidem!');
+                    return;
+                }
+
+                fetch('{% url "alterar_senha" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        senha_atual: senhaAtual,
+                        nova_senha: novaSenha
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.erro) {
+                        alert(data.erro);
+                    } else {
+                        alert(data.mensagem);
+                        alterarSenhaModal.style.display = 'none';
+                        formAlterarSenha.reset();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao alterar a senha. Tente novamente.');
+                });
+            });
+        }
+    });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

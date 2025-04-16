@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>FastHealthy - Perfil do Usuário</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    <nav class="home-navbar">
+        <div class="logo">
+            <h1>FastHealthy<span class="plus-icon">+</span></h1>
+        </div>
+        <div class="nav-buttons">
+            <a href="{% url 'home' %}" class="nav-button">Voltar para Home</a>
+        </div>
+    </nav>
+
+    <div class="login-container perfil-container">
+        <div class="perfil-header">
+            <img src="{% static 'img/avatar-default.png' %}" alt="Foto de Perfil" class="perfil-foto">
+            <h2>Meu Perfil</h2>
+        </div>
+
+        <div class="perfil-secoes">
+            <!-- Seção de Informações Pessoais -->
+            <div class="perfil-secao">
+                <h3>Informações Pessoais</h3>
+                <div class="perfil-info-grupo">
+                    <label>Nome:</label>
+                    <p>{{ user.first_name }} {{ user.last_name }}</p>
+                    <button class="edit-btn" data-campo="nome">Editar</button>
+                </div>
+                <div class="perfil-info-grupo">
+                    <label>Email:</label>
+                    <p>{{ user.email }}</p>
+                    <button class="edit-btn" data-campo="email">Editar</button>
+                </div>
+            </div>
+
+            <!-- Seção de Informações de Saúde -->
+            <div class="perfil-secao">
+                <h3>Informações de Saúde</h3>
+                <div class="perfil-info-grupo">
+                    <label>Peso:</label>
+                    <p>{{ perfil.peso }} kg</p>
+                    <button class="edit-btn" data-campo="peso">Editar</button>
+                </div>
+                <div class="perfil-info-grupo">
+                    <label>Altura:</label>
+                    <p>{{ perfil.altura }} m</p>
+                    <button class="edit-btn" data-campo="altura">Editar</button>
+                </div>
+                <div class="perfil-info-grupo">
+                    <label>IMC:</label>
+                    <p>{{ imc|floatformat:1 }}</p>
+                </div>
+            </div>
+
+            <!-- Seção de Condições de Saúde -->
+            <div class="perfil-secao">
+                <h3>Condições de Saúde</h3>
+                <div class="perfil-info-grupo">
+                    <label>Diabetes:</label>
+                    <p>{% if perfil.tem_diabetes %}Sim - Tipo {{ perfil.tipo_diabetes }}{% else %}Não{% endif %}</p>
+                    <button class="edit-btn" data-campo="diabetes">Editar</button>
+                </div>
+                <div class="perfil-info-grupo">
+                    <label>Pressão Alta:</label>
+                    <p>{% if perfil.tem_pressao_alta %}Sim{% else %}Não{% endif %}</p>
+                    <button class="edit-btn" data-campo="pressao_alta">Editar</button>
+                </div>
+                <div class="perfil-info-grupo">
+                    <label>Outras Doenças:</label>
+                    <p>{{ perfil.doencas_diagnosticadas|default:"Nenhuma informada" }}</p>
+                    <button class="edit-btn" data-campo="outras_doencas">Editar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Edição -->
+        <div id="modal-edicao" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h3>Editar Informação</h3>
+                <form method="POST" action="{% url 'atualizar_perfil' %}" class="form-edicao">
+                    {% csrf_token %}
+                    <input type="hidden" name="campo" id="campo-editando">
+                    <div class="input-group">
+                        <label for="novo-valor">Novo valor:</label>
+                        <input type="text" id="novo-valor" name="valor" required>
+                    </div>
+                    <button type="submit" class="salvar-btn">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modal-edicao');
+            const editBtns = document.querySelectorAll('.edit-btn');
+            const closeBtn = document.querySelector('.close-modal');
+            const campoEditando = document.getElementById('campo-editando');
+            const inputNovoValor = document.getElementById('novo-valor');
+
+            editBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const campo = this.getAttribute('data-campo');
+                    const valorAtual = this.previousElementSibling.textContent;
+                    
+                    campoEditando.value = campo;
+                    inputNovoValor.value = valorAtual.trim();
+                    
+                    // Configurar o tipo de input baseado no campo
+                    if (campo === 'peso' || campo === 'altura') {
+                        inputNovoValor.type = 'number';
+                        inputNovoValor.step = campo === 'peso' ? '0.1' : '0.01';
+                    } else {
+                        inputNovoValor.type = 'text';
+                    }
+                    
+                    modal.style.display = 'block';
+                });
+            });
+
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

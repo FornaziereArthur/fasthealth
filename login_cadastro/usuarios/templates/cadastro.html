@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+<body class="login-page">
+    <div class="navbar-login">
+        <h1><a href="{% url 'home' %}" class="nav-logo">FastHealthy</a></h1>
+    </div>
+
+    <div class="login-container">
+        <h2>Criar uma Conta</h2>
+        
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="nome" placeholder="Nome completo" required>
+            <input type="email" name="email" placeholder="E-mail" required>
+            <input type="text" name="cpf" placeholder="CPF" required>
+            <input type="password" name="password" placeholder="Senha" required>
+            <input type="password" name="confirm_password" placeholder="Confirme a senha" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <p style="margin-top: 15px; color: #666; font-size: 14px;">
+            <a href="{% url 'login' %}" style="color: #666; text-decoration: none;">Já tem uma conta? Faça login</a>
+        </p>
+    </div>
+</body>
+</html>

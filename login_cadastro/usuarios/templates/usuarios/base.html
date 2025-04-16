@@ -1,0 +1,17 @@
+<div class="menu-toggle" id="menuToggle">
+    <i class="fas fa-user"></i>
+</div>
+<div class="dropdown-content" id="dropdownContent">
+    <div class="user-info">
+        <div class="user-name">{{ user.first_name }} {{ user.last_name }}</div>
+        <div class="user-email">{{ user.email }}</div>
+    </div>
+    <a href="#" class="dropdown-item" id="alterarSenhaBtn">
+        <i class="fas fa-key"></i>
+        Alterar Senha
+    </a>
+    <a href="{% url 'logout' %}" class="dropdown-item">
+        <i class="fas fa-sign-out-alt"></i>
+        Sair
+    </a>
+</div> 

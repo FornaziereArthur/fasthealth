@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>FastHealthy - Informações de Saúde</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    <nav class="home-navbar">
+        <div class="logo">
+            <h1>FastHealthy<span class="plus-icon">+</span></h1>
+        </div>
+    </nav>
+
+    <div class="login-container perfil-container">
+        <h2>Informações Básicas de Saúde</h2>
+        <p class="perfil-info">Por favor, preencha suas informações básicas de saúde para continuar.</p>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="input-group">
+                <label for="peso">Peso (kg)</label>
+                <input type="number" id="peso" name="peso" step="0.1" required placeholder="Ex: 70.5">
+            </div>
+
+            <div class="input-group">
+                <label for="altura">Altura (m)</label>
+                <input type="number" id="altura" name="altura" step="0.01" required placeholder="Ex: 1.75">
+            </div>
+
+            <div class="checkbox-group">
+                <h3>Você tem diabetes?</h3>
+                <div class="checkbox-option">
+                    <label>
+                        <input type="radio" name="diabetes" value="sim" id="diabetes_sim">
+                        Sim
+                    </label>
+                    <div class="sub-options" id="tipo_diabetes_options" style="display: none;">
+                        <div class="sub-option">
+                            <label>
+                                <input type="radio" name="tipo_diabetes" value="tipo1">
+                                Tipo 1
+                            </label>
+                        </div>
+                        <div class="sub-option">
+                            <label>
+                                <input type="radio" name="tipo_diabetes" value="tipo2">
+                                Tipo 2
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="checkbox-option">
+                    <label>
+                        <input type="radio" name="diabetes" value="nao" id="diabetes_nao">
+                        Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <h3>Você tem pressão alta?</h3>
+                <div class="checkbox-option">
+                    <label>
+                        <input type="radio" name="pressao_alta" value="sim">
+                        Sim
+                    </label>
+                </div>
+                <div class="checkbox-option">
+                    <label>
+                        <input type="radio" name="pressao_alta" value="nao">
+                        Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="doencas">Outras doenças diagnosticadas</label>
+                <textarea id="doencas" name="doencas_diagnosticadas" rows="3" 
+                    placeholder="Liste outras doenças que você já foi diagnosticado(a)"></textarea>
+            </div>
+
+            <button type="submit">Salvar Informações</button>
+        </form>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const pesoInput = document.getElementById('peso');
+        const alturaInput = document.getElementById('altura');
+        const diabetesSim = document.getElementById('diabetes_sim');
+        const diabetesNao = document.getElementById('diabetes_nao');
+        const tipoDiabetesOptions = document.getElementById('tipo_diabetes_options');
+
+        // Função para mostrar/esconder opções de tipo de diabetes
+        function toggleTipoDiabetes() {
+            if (diabetesSim.checked) {
+                tipoDiabetesOptions.style.display = 'block';
+            } else {
+                tipoDiabetesOptions.style.display = 'none';
+                // Limpa a seleção do tipo de diabetes quando "Não" é selecionado
+                document.querySelectorAll('input[name="tipo_diabetes"]').forEach(radio => {
+                    radio.checked = false;
+                });
+            }
+        }
+
+        // Adiciona listeners para os radio buttons de diabetes
+        diabetesSim.addEventListener('change', toggleTipoDiabetes);
+        diabetesNao.addEventListener('change', toggleTipoDiabetes);
+
+        // Validação do formulário
+        form.addEventListener('submit', function(e) {
+            const peso = parseFloat(pesoInput.value);
+            const altura = parseFloat(alturaInput.value);
+
+            if (peso <= 0 || peso > 300) {
+                e.preventDefault();
+                alert('Por favor, insira um peso válido (entre 0 e 300 kg).');
+                return;
+            }
+
+            if (altura <= 0 || altura > 3) {
+                e.preventDefault();
+                alert('Por favor, insira uma altura válida (entre 0 e 3 metros).');
+                return;
+            }
+
+            // Validação para diabetes
+            if (diabetesSim.checked) {
+                const tipoSelecionado = document.querySelector('input[name="tipo_diabetes"]:checked');
+                if (!tipoSelecionado) {
+                    e.preventDefault();
+                    alert('Por favor, selecione o tipo de diabetes.');
+                    return;
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html> 

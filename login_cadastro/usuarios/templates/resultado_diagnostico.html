@@ -1,0 +1,51 @@
+{% extends 'base_logado.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Resultado do Diagnóstico{% endblock %}
+
+{% block content %}
+<div class="resultado-container">
+    <h2>Resultado do Diagnóstico</h2>
+    
+    <div class="resultado-section">
+        <h3>Sintomas Descritos:</h3>
+        <p>{{ diagnostico.sintomas }}</p>
+    </div>
+    
+    <div class="resultado-section">
+        <h3>Possível Doença:</h3>
+        <p>{{ diagnostico.doenca_sugerida }}</p>
+    </div>
+    
+    <div class="resultado-section">
+        <h3>Especialidade Recomendada:</h3>
+        <p>{{ diagnostico.especialidade_recomendada }}</p>
+    </div>
+    
+    <div class="resultado-section">
+        <h3>Nível de Confiança do Diagnóstico:</h3>
+        <div class="confianca-barra">
+            <div class="confianca-progresso" data-confianca="{{ diagnostico.confianca_diagnostico|multiply:100 }}"></div>
+        </div>
+        <p class="confianca-texto" style="text-align: center; margin-top: 5px;">{{ diagnostico.confianca_diagnostico|multiply:100 }}%</p>
+    </div>
+    
+    <div class="resultado-botoes">
+        <a href="{% url 'diagnostico' %}" class="resultado-botao">Novo Diagnóstico</a>
+        <a href="{% url 'historico_diagnosticos' %}" class="resultado-botao secundario">Ver Histórico</a>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const barraProgresso = document.querySelector('.confianca-progresso');
+    if (barraProgresso) {
+        const confianca = barraProgresso.getAttribute('data-confianca');
+        barraProgresso.style.width = confianca + '%';
+    }
+});
+</script>
+{% endblock %}
+{% endblock %} 

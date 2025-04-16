@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Início{% endblock %}
+
+{% block body_class %}home-body{% endblock %}
+
+{% block content %}
+<main class="home-content">
+    <h1 class="main-title">Bem vindo ao FastHealthy</h1>
+    <p class="subtitle">Uma plataforma simples para gerenciar saúde com praticidade e tecnologia</p>
+    
+    <div class="action-buttons">
+        <a href="{% url 'login' %}" class="action-button login-btn">FAZER LOGIN</a>
+        <a href="{% url 'cadastro' %}" class="action-button cadastro-btn">CRIAR CONTA</a>
+    </div>
+</main>
+{% endblock %} 
